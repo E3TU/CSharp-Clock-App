@@ -1,5 +1,7 @@
-﻿using System;
-using System.Threading;
+﻿// using System;
+// using System.Threading;
+using Spectre.Console;
+// using Spectre.Console.Cli;
 
 namespace ClockApp
 {
@@ -7,10 +9,10 @@ namespace ClockApp
     {
         static void Main(string[] args)
         {
-            Console.Title = "ClockApp";
-            
+            // Clear the scrollback buffer
+            string hidecursor = "\\e[3J";
+            // Clear the console
             Console.Clear();
-            Console.CursorVisible = false;
             
             while (true)
             {
@@ -18,11 +20,19 @@ namespace ClockApp
                 
                 string time24h = now.ToString("HH:mm:ss");
                 
-                Console.SetCursorPosition(0, 0);
-                Console.WriteLine(time24h);
-                Thread.Sleep(1000);
+                // Console.SetCursorPosition(0, 0);
+                // Console.WriteLine(time24h);
+                var figlet = new FigletText(time24h).Centered().Color(Color.Green);
+
+                AnsiConsole.Live(figlet)
+                    .AutoClear(true)   // Do not remove when done
+                    .Start(ctx =>
+                    {   
+                        ctx.Refresh();
+                        Thread.Sleep(1000);
+                        Console.Write(hidecursor);
+                    });
             }
-            
         }
     }
 }
